@@ -142,3 +142,32 @@ def delete(request, id):
         obj_data = students.objects.get(cid=id)
         print(model_to_dict(obj_data))
         return render(request, 'delete.html', {'obj_data': obj_data})
+
+from django.http import JsonResponse    
+def getAllItems(request):
+    resultObject = students.objects.all().order_by('cid')
+    # print(type(resultList))
+    # for item in resultList:
+    #     # print(model_to_dict(item))
+    #     print(type(item))
+    resultList = list(resultObject.values()) # 將 "querySet(元素為object)" 轉成 "list(元素為dict)" 的型態
+    # print(type(resultList))
+    # for item in resultList:
+    #     # print(model_to_dict(item))
+    #     print(type(item))
+
+    # return HttpResponse("Hello")
+    return JsonResponse(resultList, safe=False)
+    # safe=True: 只允許傳入dict
+    # safe=False: 只允許傳入非dict
+
+def getItem(request, id):
+    try:
+        obj = students.objects.get(cid=id)
+        # print(model_to_dict(obj))
+        resultDict = model_to_dict(obj) # 將object轉成dict
+        # return HttpResponse("Hello")
+        return JsonResponse(resultDict, safe=False)
+    except:
+        # return HttpResponse("False")
+        return JsonResponse({"error": "Item not found"}, status=404)
